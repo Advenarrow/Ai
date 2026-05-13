@@ -1,0 +1,24 @@
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import accuracy_score
+
+# Load data
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.3, random_state=42)
+
+# 8B. Boosting Model (AdaBoost)
+model = AdaBoostClassifier(n_estimators=50, learning_rate=1, random_state=42)
+model.fit(X_train, y_train)
+
+# Output
+y_pred = model.predict(X_test)
+print(f"Boosting Accuracy: {accuracy_score(y_test, y_pred)*100:.2f}%")
+
+# Visualization: Feature Importance (showing which features the boosting model focused on)
+plt.figure(figsize=(8, 5))
+plt.barh(iris.feature_names, model.feature_importances_, color='lightgreen')
+plt.xlabel('Importance Score')
+plt.title('Feature Importance in Boosting')
+plt.show()

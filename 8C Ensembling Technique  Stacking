@@ -1,0 +1,35 @@
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import StackingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+
+# Load data
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.3, random_state=42)
+
+# 8C. Stacking Model
+# Define base learners
+base_learners = [
+    ('dt', DecisionTreeClassifier(random_state=42)),
+    ('svc', SVC(probability=True))
+]
+
+# Define the final meta-model
+model = StackingClassifier(estimators=base_learners, final_estimator=LogisticRegression())
+model.fit(X_train, y_train)
+
+# Output
+y_pred = model.predict(X_test)
+print(f"Stacking Accuracy: {accuracy_score(y_test, y_pred)*100:.2f}%")
+
+# Visualization: Accuracy Comparison
+plt.figure(figsize=(8, 5))
+plt.bar(['Stacking Ensemble'], [accuracy_score(y_test, y_pred)], color='salmon')
+plt.title('Stacking Model Performance')
+plt.ylabel('Accuracy')
+plt.ylim(0, 1)
+plt.show()

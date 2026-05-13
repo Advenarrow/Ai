@@ -1,0 +1,54 @@
+import networkx as nx 
+import matplotlib.pyplot as plt 
+
+graph = { 
+    'A': [('B', 1), ('C', 3)], 
+    'B': [('D', 3)], 
+    'C': [('D', 1)], 
+    'D': [] 
+} 
+
+heuristic = {'A': 4, 'B': 2, 'C': 3, 'D': 0} 
+MEMORY_LIMIT = 2 
+
+def memory_bounded_a_star(start, goal): 
+    # (f_cost, g_cost, node)
+    open_list = [(heuristic[start], 0, start)] 
+    order = [] 
+    
+    while open_list: 
+        open_list.sort() 
+        
+        # Enforce Memory Limit: Remove the worst node (highest f-cost) if limit exceeded
+        if len(open_list) > MEMORY_LIMIT: 
+            open_list.pop() 
+            
+        f, g, node = open_list.pop(0) 
+        order.append(node) 
+        
+        if node == goal: 
+            break 
+            
+        for child, cost in graph[node]: 
+            g_new = g + cost 
+            f_new = g_new + heuristic[child] 
+            open_list.append((f_new, g_new, child)) 
+            
+    return order 
+
+# Execution
+traversal = memory_bounded_a_star('A', 'D') 
+print("MEMORY BOUNDED A* traversal:", " ".join(traversal)) 
+
+# -------- Graph Drawing -------- 
+G = nx.DiGraph() 
+for node, neighbors in graph.items(): 
+    for neighbor, weight in neighbors: 
+        G.add_edge(node, neighbor, weight=weight) 
+
+pos = nx.planar_layout(G) 
+nx.draw(G, pos, with_labels=True, node_color="lightgreen", node_size=2000, arrows=True) 
+labels = nx.get_edge_attributes(G, 'weight') 
+nx.draw_networkx_edge_labels(G, pos, edge_labels=labels) 
+plt.title(f"Memory-Bounded A* (Limit: {MEMORY_LIMIT})") 
+plt.show()

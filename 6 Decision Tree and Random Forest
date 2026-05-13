@@ -1,0 +1,35 @@
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+# 1. Load the Iris dataset
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(
+    iris.data, iris.target, test_size=0.3, random_state=42
+)
+
+# 2. Decision Tree (Single Branch / Depth = 1)
+dt_model = DecisionTreeClassifier(max_depth=1, random_state=42)
+dt_model.fit(X_train, y_train)
+dt_acc = accuracy_score(y_test, dt_model.predict(X_test)) * 100
+print(f"Decision Tree Accuracy: {dt_acc:.2f}%")
+
+# 3. Random Forest (Multiple Trees)
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train)
+rf_acc = accuracy_score(y_test, rf_model.predict(X_test)) * 100
+print(f"Random Forest Accuracy: {rf_acc:.2f}%")
+
+# Plotting
+plt.figure(figsize=(12, 5))
+plt.subplot(1, 2, 1)
+plot_tree(dt_model, feature_names=iris.feature_names, filled=True)
+plt.title("Decision Tree (Depth 1)")
+
+plt.subplot(1, 2, 2)
+plot_tree(rf_model.estimators_[0], feature_names=iris.feature_names, filled=True)
+plt.title("One Tree from Random Forest")
+plt.show()
